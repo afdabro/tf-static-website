@@ -1,3 +1,7 @@
+provider "aws" {
+  profile                 = "${var.aws_profile}"
+}
+
 resource "aws_s3_bucket" "domain_logs_bucket" {
   bucket = "logs.${var.domain}"
   acl    = "log-delivery-write"
@@ -6,7 +10,7 @@ resource "aws_s3_bucket" "domain_logs_bucket" {
     Environment = "${var.environment_tag}"
     Owner = "${var.owner_tag}"
     Project = "${var.project_tag}"
-    Confidentiality = "${var.confidentiality_tag}"
+    Confidentiality = "internal"
     Compliance = "${var.compliance_tag}"
   }
   lifecycle_rule {
@@ -42,7 +46,7 @@ resource "aws_s3_bucket" "domain-spa" {
     Environment = "${var.environment_tag}"
     Owner = "${var.owner_tag}"
     Project = "${var.project_tag}"
-    Confidentiality = "${var.confidentiality_tag}"
+    Confidentiality = "public"
     Compliance = "${var.compliance_tag}"
   }
 }
@@ -84,7 +88,7 @@ resource "aws_s3_bucket" "subdomain-spa" {
     Environment = "${var.environment_tag}"
     Owner = "${var.owner_tag}"
     Project = "${var.project_tag}"
-    Confidentiality = "${var.confidentiality_tag}"
+    Confidentiality = "public"
     Compliance = "${var.compliance_tag}"
   }
 }
@@ -182,7 +186,7 @@ resource "aws_cloudfront_distribution" "domain_distribution" {
     Environment = "${var.environment_tag}"
     Owner = "${var.owner_tag}"
     Project = "${var.project_tag}"
-    Confidentiality = "${var.confidentiality_tag}"
+    Confidentiality = "public"
     Compliance = "${var.compliance_tag}"
   }
 

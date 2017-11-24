@@ -1,3 +1,6 @@
+variable "aws_profile" {
+  description = "AWS Profile"
+}
 variable "domain" {
   description = "The Website Domain name"
 }
@@ -12,10 +15,6 @@ variable "owner_tag" {
 
 variable "project_tag" {
   description = "Project Tag"
-}
-
-variable "confidentiality_tag" {
-  description = "Confidentiality Tag"
 }
 
 variable "compliance_tag" {

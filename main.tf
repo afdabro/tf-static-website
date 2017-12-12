@@ -141,7 +141,7 @@ resource "aws_cloudfront_distribution" "domain_distribution" {
 
   logging_config {
     include_cookies = false
-    bucket          = "logs.${var.domain}"
+    bucket          = "${aws_s3_bucket.domain_logs_bucket.bucket_domain_name}"
     prefix          = "logs/cdn/"
   }
 
@@ -198,31 +198,14 @@ resource "aws_cloudfront_distribution" "domain_distribution" {
 }
 
 // Route 53
-resource "aws_route53_zone" "main" {
-  name = "${var.domain}"
-  tags {
-    Name     = "route53-${var.domain}"
-    Environment = "${var.environment_tag}"
-    Owner = "${var.owner_tag}"
-    Project = "${var.project_tag}"
-  }
+data "aws_route53_zone" "main" {
+  name         = "${var.domain}"
 }
 
 resource "aws_route53_record" "root-a" {
-  zone_id = "${aws_route53_zone.main.zone_id}"
+  zone_id = "${data.aws_route53_zone.main.zone_id}"
   name    = "${var.domain}"
   type    = "A"
-  alias {
-    name                   = "${aws_cloudfront_distribution.domain_distribution.domain_name}"
-    zone_id                = "${aws_cloudfront_distribution.domain_distribution.hosted_zone_id}"
-    evaluate_target_health = true
-  }
-}
-
-resource "aws_route53_record" "root-aaaa" {
-  zone_id = "${aws_route53_zone.main.zone_id}"
-  name    = "${var.domain}"
-  type    = "AAAA"
   alias {
     name                   = "${aws_cloudfront_distribution.domain_distribution.domain_name}"
     zone_id                = "${aws_cloudfront_distribution.domain_distribution.hosted_zone_id}"
@@ -231,20 +214,9 @@ resource "aws_route53_record" "root-aaaa" {
 }
 
 resource "aws_route53_record" "www-a" {
-  zone_id = "${aws_route53_zone.main.zone_id}"
+  zone_id = "${data.aws_route53_zone.main.zone_id}"
   name    = "www.${var.domain}"
   type    = "A"
-  alias {
-    name                   = "${aws_cloudfront_distribution.domain_distribution.domain_name}"
-    zone_id                = "${aws_cloudfront_distribution.domain_distribution.hosted_zone_id}"
-    evaluate_target_health = true
-  }
-}
-
-resource "aws_route53_record" "www-aaaa" {
-  zone_id = "${aws_route53_zone.main.zone_id}"
-  name    = "www.${var.domain}"
-  type    = "AAAA"
   alias {
     name                   = "${aws_cloudfront_distribution.domain_distribution.domain_name}"
     zone_id                = "${aws_cloudfront_distribution.domain_distribution.hosted_zone_id}"
